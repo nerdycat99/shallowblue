@@ -1,0 +1,43 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.square {
+  float:left;
+  width: 12.5%;
+  padding-bottom: 12.5%;  /*  set equal to width for a 1:1 aspect ratio */
+  margin:0%;    /* we have 8 squares at 12.5% each = 100%, no margins */
+}
+
+.white {
+  background-color: #F7F7E9;
+}
+
+.black {
+  background-color: #1E1E1E;
+}
