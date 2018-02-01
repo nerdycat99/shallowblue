@@ -24,29 +24,16 @@ class App extends Component {
         </header>
 
           <div>
-            
-            {squares.map(function() {
 
-              for(let row = 8; row >= 1; row--) {
-                for(let col = 1; col <= 8; col++) {
-                  if ((row % 2 === 0 && col % 2 === 0) || (row % 2 !== 0 && col % 2 !== 0)) { return <div className="square black"></div> }
-                  if ((row % 2 === 0 && col % 2 !== 0) || (row % 2 !== 0 && col % 2 === 0)) { return <div className="square black"></div>  }
-                };
-              };
-
-            }.bind(this))}
-
-
-
-
-          </div>
+            {squares.map((item)=>
+            <div className={item.colour}></div>)}
+            </div>
 
       </div>
 
     );
   }
 }
-
 
 
 export default App;
