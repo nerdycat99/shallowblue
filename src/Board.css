@@ -32,6 +32,7 @@
   width: 12.5%;
   padding-bottom: 12.5%;  /*  set equal to width for a 1:1 aspect ratio */
   margin:0%;    /* we have 8 squares at 12.5% each = 100%, no margins */
+  color: coral;
 }
 
 .white {
