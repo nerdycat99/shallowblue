@@ -29,16 +29,33 @@
 
 .square {
   float:left;
+  position: relative;
+  overflow:hidden;
   width: 12.5%;
+  height: 12.5%;
   padding-bottom: 12.5%;  /*  set equal to width for a 1:1 aspect ratio */
   margin:0%;    /* we have 8 squares at 12.5% each = 100%, no margins */
-  color: coral;
+  
 }
 
 .white {
-  background-color: #F7F7E9;
+  background-color: bisque
 }
 
 .black {
-  background-color: #1E1E1E;
+  background-color: cadetblue
 }
+
+.moveHighlight {
+  background-color: aquamarine;
+}
+
+.piece {
+  position: absolute;
+  padding: 0%;
+  height: 100%;
+  width: 100%;
+  font-size: 95px;
+
+}
+

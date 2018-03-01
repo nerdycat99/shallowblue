@@ -2,38 +2,9 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Square from './Square';
 import './Board.css';
+// import reducer from './reducer'
 
-const aBoard = [
-  {
-    key: 11,
-    row: 1, 
-    col: 1, 
-    colour: "square black", 
-    piece: "Rook",
-  },
-  {
-    key: 22,
-    row: 2, 
-    col: 2, 
-    colour: "square white", 
-    piece: "Pawn",
-  },
-  {
-    key: 12,
-    row: 1, 
-    col: 2, 
-    colour: "square white", 
-    piece: "",
-  },
-  {
-    key: 21,
-    row: 2, 
-    col: 1, 
-    colour: "square black", 
-    piece: "",
-  },
-];
-
+let initialBoard;
 
 class Board extends Component {
 
@@ -41,19 +12,15 @@ class Board extends Component {
     super();
     this.buildTheBoard = this.buildTheBoard.bind(this);
     this.buildASquare = this.buildASquare.bind(this);
-    this.updateTheBoard = this.updateTheBoard.bind(this);
-    this.state = {
-      theBoard: [],
-    };
+    this.assignPieceDisplay = this.assignPieceDisplay.bind(this);  
+    this.movePiece = this.movePiece.bind(this);
+    this.highlightSquare = this.highlightSquare.bind(this);
 }
 
-
 componentDidMount() {
-  let tmpBoard = [];
-  this.buildTheBoard(tmpBoard);
-  this.setState({
-    theBoard:tmpBoard
-  });
+  initialBoard = this.props.gameState;
+  this.buildTheBoard(initialBoard);
+  this.props.updateGameState(initialBoard);
 }
 
 
@@ -62,12 +29,13 @@ render() {
 
   return (
     <div>
-      { this.state.theBoard.map((item) =>
+      { this.props.gameState.map((item) =>
         <div key={item.key}>
           <Square 
-          key={item.key}
-          initSquare={item}
-          updateTheBoard = {this.updateTheBoard}
+          //  key={item.key}
+            initSquare={item}
+            movePiece = {this.movePiece}
+            highlightSquare = {this.highlightSquare}
           />
         </div>
       )}  
@@ -75,66 +43,103 @@ render() {
   );
   
 }
+  dispatch (action /*: Action */) {
+//    this.setState(reducer(this.state, action))
+  }
 
-  updateTheBoard(current, target) {
-    let pieceMoving = current.piece;
-    const futureState = [...this.state.theBoard];
+  highlightSquare(touchedSquare, onOff, touchedSquareColour) {
+    const futureState = [...this.props.gameState];
+    for(var square = 0; square < futureState.length; square++) {
+      if (futureState[square].key === touchedSquare.key) {
+        onOff ? 
+          futureState[square].colour = "square moveHighlight"
+          :
+          futureState[square].colour = touchedSquareColour;
+        this.props.updateGameState(futureState);
+      }
+    }
+  }
+
+  movePiece(current, target) {
+    let pieceMoving = current.display;
+    let test = current.piece;
+    const futureState = [...this.props.gameState];
     for(var square = 0; square < futureState.length; square++) {
         if(futureState[square].key === current.key) {
-        //  alert("matched"+futureState[square].key);
-        //  pieceMoving = futureState[square].piece;
-          futureState[square].piece = "...";
+          futureState[square].display = "";
+          futureState[square].piece = "";
         } else if (futureState[square].key === target.key) {
-          futureState[square].piece = pieceMoving;
+          futureState[square].display = pieceMoving;
+          futureState[square].piece = test;
         } else {
-          
+          // no action
         }
     }
-    this.setState({  
-      theBoard:futureState
-    }); 
+    this.props.updateGameState(futureState);
    
   }
 
 
-  buildASquare(row,col,colour,tmpBoard) {
+  buildASquare(row,col,colour,initialBoard) {
     var id = row.toString()+col.toString();
-    let player;
+    let player, pieceName, pieceDisplay;
     if (row <=2) {player = "white"} 
     if (row >=7) {player = "black"} 
     if(row <= 1 || row >=8) {
       switch (col) {
         case 1:
         case 8:
-          return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-Rook",},)
+          pieceDisplay = this.assignPieceDisplay(pieceName = "Rook", player)
+          return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)
         case 2:
         case 7:
-          return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-Knight",},)
+          pieceDisplay = this.assignPieceDisplay(pieceName = "Knight", player)
+          return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)
         case 3:
         case 6:
-          return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-Bishop",},)
+          pieceDisplay = this.assignPieceDisplay(pieceName = "Bishop", player)
+          return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)
         case 4:
-          return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-King",},)
+          pieceDisplay = this.assignPieceDisplay(pieceName = "King", player)
+          return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)
         case 5:
-          return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-Queen",},)    
+          pieceDisplay = this.assignPieceDisplay(pieceName = "Queen", player)
+          return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)  
       }
     } else if (row === 2 || row === 7) {
-        return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-Pawn",},)
+        pieceDisplay = this.assignPieceDisplay(pieceName = "Pawn", player)
+        return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: player + "-" + pieceName, display: pieceDisplay,},)
     } else {
-        return tmpBoard.push({key: id, row: row, col: col, colour: colour, piece: "...",},)
+        return initialBoard.push({key: id, row: row, col: col, colour: colour, piece: "", display: ""},)
     }
   }
 
-  buildTheBoard(tmpBoard) {
-    
+  assignPieceDisplay(pieceName,player) {
+    switch (pieceName) {
+      case "Rook":
+        if (player === "white") { return "♖" } else { return "♜" }
+      case "Knight":
+        if (player === "white") { return "♘" } else { return "♞" }
+      case "Bishop":
+        if (player === "white") { return "♗" } else { return "♝" }
+      case "King":
+        if (player === "white") { return "♔" } else { return "♚" }
+      case "Queen":
+        if (player === "white") { return "♕" } else { return "♛" }
+      case "Pawn":
+        if (player === "white") { return "♙" } else { return "♟" }
+    }
+
+  }
+
+  buildTheBoard(initialBoard) {
     for(let row = 8; row >= 1; row--) {
       for(let col = 1; col <= 8; col++) {
         if ((row % 2 === 0 && col % 2 === 0) || (row % 2 !== 0 && col % 2 !== 0)) { var colour = 'square black'; }
         if ((row % 2 === 0 && col % 2 !== 0) || (row % 2 !== 0 && col % 2 === 0)) { var colour = 'square white'; }
-        this.buildASquare(row,col,colour,tmpBoard);
+        this.buildASquare(row,col,colour,initialBoard);
       };
     };
-
   }
 
 

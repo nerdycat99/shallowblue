@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Piece from './Piece';
+import {pieceValid} from './MoveRules'
 import './Square.css';
 
 let clickCount = false;
@@ -7,6 +8,7 @@ let current;
 let target;
 let thisPlayer;
 let lastPlayer;
+let movingSquareColour;
 
 
 class Square extends Component {
@@ -18,19 +20,31 @@ class Square extends Component {
     this.checkMate = this.checkMate.bind(this);
     this.notTakingMyOwnPiece = this.notTakingMyOwnPiece.bind(this);
     this.validForPiece = this.validForPiece.bind(this);
-
   }
 
   handleClick() {
+ 
     if (!clickCount) {
-      if(this.props.initSquare.piece != '...') {
-        current = this.props.initSquare;
+      if(this.props.initSquare.piece != '') {
+        current = this.props.initSquare;     
         thisPlayer = (this.props.initSquare.piece).substring(0,5);
-        clickCount = true;
+        if (this.playersMove()) {
+          // first touch, user touched a piece and it is their turn
+          movingSquareColour = current.colour;
+          this.props.highlightSquare(current,true,movingSquareColour);
+          clickCount = true;
+        } else {
+          alert ("it's not your move");
+        }     
       } else {
         alert("please select a piece to move")
+      //  pieceValid(current); - example, place all move logic in external fiel with export methods
       }
     } else {
+      // in here we know it is the second click - target square known
+      // in here we must return true if valid move
+      // TRUE> movePiece, highlight off, set LastPlayer, reset clickCount
+      // FALSE> invalid move, highlight off, leave LastPlayer as is, reset clickCount
       target = this.props.initSquare;
       clickCount = false;
       this.isValidMove(current,target)
@@ -44,10 +58,14 @@ class Square extends Component {
     let targetCol = target.col;
     let piece = current.piece.substring(6);
 
-    if (this.playersMove() && this.validForPiece(piece) && this.notTakingMyOwnPiece()) {
+    if (this.validForPiece(piece) && this.notTakingMyOwnPiece()) {
       lastPlayer = thisPlayer;
-      this.props.updateTheBoard(current, target);
-    } 
+      this.props.highlightSquare(current,false,movingSquareColour);
+      this.props.movePiece(current, target);
+    } else {
+      alert("invalid move");
+      this.props.highlightSquare(current,false,movingSquareColour);
+    }
   }
 
   playersMove() { if (thisPlayer !== lastPlayer) { return true } }
@@ -68,16 +86,16 @@ class Square extends Component {
       case "King":
         return true;
       case "Queen":
-        return false;
+        return true;
     }
   }
 
     render() {
         return(
             <div className={this.props.initSquare.colour + " " + "pos"+this.props.initSquare.key} onClick={this.handleClick}>
-              <div>
+
                 <Piece initPiece={this.props.initSquare}/>
-              </div>
+
             </div>
         );
     }

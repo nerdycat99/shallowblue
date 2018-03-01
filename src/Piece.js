@@ -13,7 +13,7 @@ class Piece extends Component {
   } 
 
   createPiece() {
-    let pieceName = this.props.initPiece.piece;
+    let pieceName = this.props.initPiece.display;
     let pieceRow = this.props.initPiece.row;
     let pieceColour = this.props.initPiece.player;
   //  if (pieceName != "") {
@@ -40,7 +40,7 @@ class Piece extends Component {
     render() {
 
         return(
-          <div onClick={this.handleClick}>{this.createPiece()}</div>
+          <div className="piece" onClick={this.handleClick}>{this.createPiece()}</div>
         );
 
     }
