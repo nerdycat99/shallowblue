@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Square from './Square';
 import './Board.css';
+import {opponentMove} from './OpponentLogic'
 // import reducer from './reducer'
 
 let initialBoard;
@@ -14,6 +15,7 @@ class Board extends Component {
     this.buildASquare = this.buildASquare.bind(this);
     this.assignPieceDisplay = this.assignPieceDisplay.bind(this);  
     this.movePiece = this.movePiece.bind(this);
+    this.moveAI = this.moveAI.bind(this);
     this.highlightSquare = this.highlightSquare.bind(this);
 }
 
@@ -36,6 +38,7 @@ render() {
             initSquare={item}
             movePiece = {this.movePiece}
             highlightSquare = {this.highlightSquare}
+            gameState = {this.props.gameState}
           />
         </div>
       )}  
@@ -76,7 +79,26 @@ render() {
         }
     }
     this.props.updateGameState(futureState);
-   
+    let retVal = opponentMove(this.props.gameState);
+    this.moveAI(retVal[0],retVal[1]);
+  }
+
+  moveAI(current, target) {
+    let pieceMoving = current.display;
+    let test = current.piece;
+    const futureState = [...this.props.gameState];
+    for(var square = 0; square < futureState.length; square++) {
+        if(futureState[square].key === current.key) {
+          futureState[square].display = "";
+          futureState[square].piece = "";
+        } else if (futureState[square].key === target.key) {
+          futureState[square].display = pieceMoving;
+          futureState[square].piece = test;
+        } else {
+          // no action
+        }
+    }
+    this.props.updateGameState(futureState);
   }
 
 

@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import Piece from './Piece';
-import {pieceValid} from './MoveRules'
+import {validMove} from './MoveRules'
 import './Square.css';
 
 let clickCount = false;
 let current;
 let target;
 let thisPlayer;
-let lastPlayer;
+let lastPlayer; 
 let movingSquareColour;
 
 
@@ -15,11 +15,9 @@ class Square extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
-    this.isValidMove = this.isValidMove.bind(this);
     this.playersMove = this.playersMove.bind(this);
-    this.checkMate = this.checkMate.bind(this);
-    this.notTakingMyOwnPiece = this.notTakingMyOwnPiece.bind(this);
-    this.validForPiece = this.validForPiece.bind(this);
+  //  this.notTakingMyOwnPiece = this.notTakingMyOwnPiece.bind(this);
+  //  this.validForPiece = this.validForPiece.bind(this);
   }
 
   handleClick() {
@@ -47,61 +45,25 @@ class Square extends Component {
       // FALSE> invalid move, highlight off, leave LastPlayer as is, reset clickCount
       target = this.props.initSquare;
       clickCount = false;
-      this.isValidMove(current,target)
+      if (validMove(current,target, this.props.gameState)) {
+        lastPlayer = thisPlayer;
+        this.props.movePiece(current, target);
+      } else {
+        alert("invalid move");
+      }
+      this.props.highlightSquare(current,false,movingSquareColour);
     }
   } 
 
-  isValidMove(current,target) {
-    let curentRow = current.row;
-    let currentCol = current.col;
-    let targetRow = target.row;
-    let targetCol = target.col;
-    let piece = current.piece.substring(6);
-
-    if (this.validForPiece(piece) && this.notTakingMyOwnPiece()) {
-      lastPlayer = thisPlayer;
-      this.props.highlightSquare(current,false,movingSquareColour);
-      this.props.movePiece(current, target);
-    } else {
-      alert("invalid move");
-      this.props.highlightSquare(current,false,movingSquareColour);
-    }
-  }
-
   playersMove() { if (thisPlayer !== lastPlayer) { return true } }
-  checkMate() { return false }
-  notTakingMyOwnPiece() { if (thisPlayer != target.piece.substring(0,5)) { return true } }
-
-
-  validForPiece(piece) {
-    switch (piece) {
-      case "Pawn":
-        return true;
-      case "Rook":
-        return true;
-      case "Knight":
-        return true;
-      case "Bishop":
-        return true;
-      case "King":
-        return true;
-      case "Queen":
-        return true;
-    }
-  }
-
+  
     render() {
         return(
             <div className={this.props.initSquare.colour + " " + "pos"+this.props.initSquare.key} onClick={this.handleClick}>
-
                 <Piece initPiece={this.props.initSquare}/>
-
             </div>
         );
     }
-
-
-  
 }
 
 export default Square;
