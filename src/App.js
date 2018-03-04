@@ -7,7 +7,9 @@ class App extends Component {
   constructor() {
     super();
     this.updateGameState = this.updateGameState.bind(this);
+    this.updatePlayersTurn = this.updatePlayersTurn.bind(this);
     this.state = {
+      currentPlayer: "white",
       gameState: [],
     };
   }   
@@ -16,6 +18,13 @@ class App extends Component {
     this.setState({  
       gameState:futureState
     }); 
+  }
+
+  
+  updatePlayersTurn(nextPlayer) {
+    this.setState({
+      currentPlayer:nextPlayer
+    })
   }
 
 
@@ -29,6 +38,8 @@ class App extends Component {
           <Board 
             gameState={this.state.gameState} 
             updateGameState={this.updateGameState}
+            updatePlayersTurn={this.updatePlayersTurn}
+            currentPlayer={this.state.currentPlayer}
           />
         </div>
       );

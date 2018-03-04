@@ -52,14 +52,14 @@ const notObstructed=(currentCol,targetCol,currentRow,targetRow,gameState) => {
   else { directionMoved ="NS";}
   
   if (directionMoved === "VERT") {
-    if (currentRow < targetRow) {
+    if (currentRow < targetRow) { // moving up
       for(squareToCheck = currentRow+1; squareToCheck < targetRow; squareToCheck++) {
         for (var square = 0; square < gameState.length; square++) {
           returnVal = squareContainsPiece(gameState[square], squareToCheck,currentRow,currentCol,directionMoved);
           if (returnVal) { return false; }
         }
       }
-    } else {
+    } else { //moving down
       for(squareToCheck = currentRow-1; squareToCheck > targetRow; squareToCheck--) {
         for (var square = 0; square < gameState.length; square++) {
           returnVal = squareContainsPiece(gameState[square], squareToCheck,currentRow,currentCol,directionMoved);
@@ -70,7 +70,7 @@ const notObstructed=(currentCol,targetCol,currentRow,targetRow,gameState) => {
   }
 
   if (directionMoved === "HORZ") {
-    if (currentCol < targetCol) {
+    if (currentCol < targetCol) { // moving right
       for(squareToCheck = currentCol+1; squareToCheck < targetCol; squareToCheck++) {
         
         for (var square = 0; square < gameState.length; square++) {
@@ -78,7 +78,7 @@ const notObstructed=(currentCol,targetCol,currentRow,targetRow,gameState) => {
           if (returnVal) { return false; }
         }
       }
-    } else {
+    } else { // moving left
         for(squareToCheck = currentCol-1; squareToCheck > targetCol; squareToCheck--) {
           for (var square = 0; square < gameState.length; square++) {
             returnVal = squareContainsPiece(gameState[square], squareToCheck,currentRow,currentCol,directionMoved);
@@ -111,7 +111,11 @@ const notObstructed=(currentCol,targetCol,currentRow,targetRow,gameState) => {
   return true;
 }
 
-
+const notZeroMove = (current,target) =>{
+  if (current.key != target.key) {
+    return true;
+  }
+}
 
 
 
@@ -172,10 +176,11 @@ export const validMove = (current,target,gameState)=>{
     currentCol = current.col;
     targetRow = target.row;
     targetCol = target.col;
-  if (current.piece.substring(6) === "Knight" && notTakingMyOwnPiece(current,target) && rulesForPiece(current.piece)) {
+  if (current.piece.substring(6) === "Knight" && notZeroMove(current,target) && notTakingMyOwnPiece(current,target) && rulesForPiece(current.piece)) {
     return true;
   } else {
     if (notTakingMyOwnPiece(current,target) && 
+        notZeroMove(current,target) &&
         notObstructed(currentCol,targetCol,currentRow,targetRow,gameState) &&
         rulesForPiece(current.piece)) {
           return true;

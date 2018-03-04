@@ -55,8 +55,11 @@ class Square extends Component {
     }
   } 
 
-  playersMove() { if (thisPlayer !== lastPlayer) { return true } }
-  
+//  playersMove() { if (thisPlayer !== lastPlayer) { return true } }
+  playersMove() { 
+    if (thisPlayer == this.props.currentPlayer) { return true; }
+  }  
+
     render() {
         return(
             <div className={this.props.initSquare.colour + " " + "pos"+this.props.initSquare.key} onClick={this.handleClick}>

@@ -39,6 +39,7 @@ render() {
             movePiece = {this.movePiece}
             highlightSquare = {this.highlightSquare}
             gameState = {this.props.gameState}
+            currentPlayer={this.props.currentPlayer}
           />
         </div>
       )}  
@@ -78,7 +79,10 @@ render() {
           // no action
         }
     }
+
     this.props.updateGameState(futureState);
+    this.props.updatePlayersTurn("black");
+
     let retVal = opponentMove(this.props.gameState);
     this.moveAI(retVal[0],retVal[1]);
   }
@@ -99,6 +103,7 @@ render() {
         }
     }
     this.props.updateGameState(futureState);
+    this.props.updatePlayersTurn("white");
   }
 
 
