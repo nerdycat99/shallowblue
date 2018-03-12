@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import Square from './Square';
 import './Board.css';
-import {opponentMove} from './OpponentLogic'
+import {determineOpponentMove} from './OpponentLogic'
+import {isOpponentInCheck} from './CheckLogic'
 // import reducer from './reducer'
 
 let initialBoard;
@@ -28,7 +29,6 @@ componentDidMount() {
 
 
 render() {
-
   return (
     <div>
       { this.props.gameState.map((item) =>
@@ -45,7 +45,6 @@ render() {
       )}  
     </div>
   );
-  
 }
   dispatch (action /*: Action */) {
 //    this.setState(reducer(this.state, action))
@@ -64,44 +63,60 @@ render() {
     }
   }
 
+
+
   movePiece(current, target) {
-    let pieceMoving = current.display;
-    let test = current.piece;
+    let pieceMovingDisplay = current.display;
+    let pieceMovingPiece= current.piece;
     const futureState = [...this.props.gameState];
     for(var square = 0; square < futureState.length; square++) {
         if(futureState[square].key === current.key) {
           futureState[square].display = "";
           futureState[square].piece = "";
         } else if (futureState[square].key === target.key) {
-          futureState[square].display = pieceMoving;
-          futureState[square].piece = test;
+          futureState[square].display = pieceMovingDisplay;
+          futureState[square].piece = pieceMovingPiece;
         } else {
           // no action
         }
     }
-
+    if (isOpponentInCheck(target,this.props.gameState)) {
+      alert("your opponent is in check!");
+    } 
     this.props.updateGameState(futureState);
-    this.props.updatePlayersTurn("black");
+    this.props.updatePlayersTurn("black","");
 
-    let retVal = opponentMove(this.props.gameState);
-    this.moveAI(retVal[0],retVal[1]);
+    let opponentMove = determineOpponentMove(this.props.gameState);
+    this.moveAI(opponentMove[0],opponentMove[1]);
+  
+  
   }
 
   moveAI(current, target) {
-    let pieceMoving = current.display;
-    let test = current.piece;
+    let pieceMovingDisplay = current.display;
+    let pieceMovingPiece= current.piece;
+    let opponentsKing;
     const futureState = [...this.props.gameState];
     for(var square = 0; square < futureState.length; square++) {
         if(futureState[square].key === current.key) {
           futureState[square].display = "";
           futureState[square].piece = "";
         } else if (futureState[square].key === target.key) {
-          futureState[square].display = pieceMoving;
-          futureState[square].piece = test;
+          futureState[square].display = pieceMovingDisplay;
+          futureState[square].piece = pieceMovingPiece;
+        } else if ((futureState[square].piece).substring(6) === "King" && (futureState[square].piece).substring(0,5) != (current.piece).substring(0,5)) {
+          opponentsKing = futureState[square];
         } else {
           // no action
         }
     }
+    if (isOpponentInCheck(target,this.props.gameState)) {
+      alert("you are in check!");
+      // run code to pass the square of the King to highlight that Square
+      // this players King
+    //  highlightSquare(opponentsKing, false, touchedSquareColour)
+
+    } 
     this.props.updateGameState(futureState);
     this.props.updatePlayersTurn("white");
   }

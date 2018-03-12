@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import Piece from './Piece';
 import {validMove} from './MoveRules'
+import {notTakingOpponentsKing} from './MoveRules'
+import {doesNotPlacePlayerInCheck} from './MoveRules'
+
+
 import './Square.css';
 
 let clickCount = false;
@@ -16,18 +20,17 @@ class Square extends Component {
     super(props);
     this.handleClick = this.handleClick.bind(this);
     this.playersMove = this.playersMove.bind(this);
-  //  this.notTakingMyOwnPiece = this.notTakingMyOwnPiece.bind(this);
+  //  this.cloneTheState = this.cloneTheState.bind(this);
   //  this.validForPiece = this.validForPiece.bind(this);
   }
 
   handleClick() {
  
-    if (!clickCount) {
+    if (!clickCount) { // first click - get piece to move
       if(this.props.initSquare.piece != '') {
         current = this.props.initSquare;     
         thisPlayer = (this.props.initSquare.piece).substring(0,5);
         if (this.playersMove()) {
-          // first touch, user touched a piece and it is their turn
           movingSquareColour = current.colour;
           this.props.highlightSquare(current,true,movingSquareColour);
           clickCount = true;
@@ -36,26 +39,24 @@ class Square extends Component {
         }     
       } else {
         alert("please select a piece to move")
-      //  pieceValid(current); - example, place all move logic in external fiel with export methods
       }
-    } else {
-      // in here we know it is the second click - target square known
-      // in here we must return true if valid move
-      // TRUE> movePiece, highlight off, set LastPlayer, reset clickCount
-      // FALSE> invalid move, highlight off, leave LastPlayer as is, reset clickCount
+    } else { // second click - get square to move it to
       target = this.props.initSquare;
+    //  let cloneOfState = this.cloneTheState(current,target,this.props.gameState);
+
+    //  let isCheck = doesMoveMakeCheck(current,target,cloneOfState);
+    //  console.log(cloneOfState);
       clickCount = false;
-      if (validMove(current,target, this.props.gameState)) {
+    //  if (validMove(current,target, this.props.gameState) && notTakingOpponentsKing(target) && doesNotPlacePlayerInCheck(current,target, this.props.gameState)) {
+      if (validMove(current,target, this.props.gameState) && notTakingOpponentsKing(target)) {
         lastPlayer = thisPlayer;
         this.props.movePiece(current, target);
-      } else {
-        alert("invalid move");
-      }
+      } else { alert("invalid move"); }
+    
       this.props.highlightSquare(current,false,movingSquareColour);
     }
   } 
 
-//  playersMove() { if (thisPlayer !== lastPlayer) { return true } }
   playersMove() { 
     if (thisPlayer == this.props.currentPlayer) { return true; }
   }  

@@ -10,7 +10,8 @@ class App extends Component {
     this.updatePlayersTurn = this.updatePlayersTurn.bind(this);
     this.state = {
       currentPlayer: "white",
-      gameState: [],
+      inCheck: "", 
+      gameState: [], 
     };
   }   
   
@@ -21,9 +22,16 @@ class App extends Component {
   }
 
   
-  updatePlayersTurn(nextPlayer) {
+  updatePlayersTurn(nextPlayer,playerInCheck) {
     this.setState({
-      currentPlayer:nextPlayer
+      currentPlayer:nextPlayer,
+      inCheck:playerInCheck
+    })
+  }
+
+  setCheck(playerInCheck) {
+    this.setState({
+      inCheck:playerInCheck
     })
   }
 
@@ -40,6 +48,7 @@ class App extends Component {
             updateGameState={this.updateGameState}
             updatePlayersTurn={this.updatePlayersTurn}
             currentPlayer={this.state.currentPlayer}
+            inCheck={this.state.inCheck}
           />
         </div>
       );

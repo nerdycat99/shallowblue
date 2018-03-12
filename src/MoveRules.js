@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+
   let currentRow;
   let currentCol;
   let targetRow;
@@ -117,21 +118,45 @@ const notZeroMove = (current,target) =>{
   }
 }
 
+const pawnWouldTakeVertically = (targetSquare,gameState) => {
+  let retVal;
+  for (var square = 0; square < gameState.length; square++) {
+    if (gameState[square].key === targetSquare && gameState[square].piece != "") {
+      retVal = true; // piece on square pawn cannot make this move
+    } 
+  }
+  // how to make the ternary operator work with return true??
+  if (retVal) { return true; } else { return false; }
+}
 
 
-const rulesForPiece = (piece) =>{
+
+const rulesForPiece = (piece,gameState) =>{
 
   let pieceType = piece.substring(6);
   let pieceColour = piece.substring(0,5);
+  let targetSquare = targetRow.toString()+targetCol.toString();
+  let retVal;
   
   switch (pieceType) {
     case "Pawn":
+      // if the target is diag by 1 and has opponent piece in allow move
+      // calculate if current row and column to target row and column is diag one
+      // if so test if target has opponent piece in
+
+      if (Math.abs(targetCol-currentCol) === Math.abs(targetRow-currentRow)){ 
+        if ((pieceColour === "white" && currentRow +1 === targetRow) ||
+           (pieceColour === "black" && currentRow -1 === targetRow)) {
+             return true;
+           }
+      }
+  
       if ((pieceColour === "white" && currentRow === 2 && currentCol === targetCol && currentRow +2 === targetRow) || 
          (pieceColour === "white" && currentCol === targetCol && currentRow +1 === targetRow)) {
-        return true;
+          if (!pawnWouldTakeVertically(targetSquare,gameState)) { return true; } else { return false; }   
       } else if ((pieceColour === "black" && currentRow === 7 && currentCol === targetCol && currentRow -2 === targetRow) ||
                 (pieceColour === "black" && currentCol === targetCol && currentRow -1 === targetRow)) {
-        return true;
+          if (!pawnWouldTakeVertically(targetSquare,gameState)) { return true; } else { return false; }   
       } else {
         return false;
       }
@@ -171,25 +196,69 @@ const rulesForPiece = (piece) =>{
 
 
 
-export const validMove = (current,target,gameState)=>{
+
+
+export const validMove = (current,target,gameState,skipCheckCheck)=>{
     currentRow = current.row;
     currentCol = current.col;
     targetRow = target.row;
     targetCol = target.col;
   if (current.piece.substring(6) === "Knight" && notZeroMove(current,target) && notTakingMyOwnPiece(current,target) && rulesForPiece(current.piece)) {
-    return true;
+     return true;
   } else {
     if (notTakingMyOwnPiece(current,target) && 
         notZeroMove(current,target) &&
         notObstructed(currentCol,targetCol,currentRow,targetRow,gameState) &&
-        rulesForPiece(current.piece)) {
+        rulesForPiece(current.piece,gameState)) {
           return true;
+          /*
+          if (doesMakeMeInCheck(current,target,gameState)) {
+            return false;
+          } else {
+            return true;
+          }  
+          */
     } else {
       return false;
     }
   }    
 }
 
+
+
+export const notTakingOpponentsKing = (target) => {
+  if ((target.piece).substring(6) != "King") {
+    return true;
+  } else {
+    return false;
+  }
+    
+}
+
+
+export const doesNotPlacePlayerInCheck = (current,target,gameState) => {
+
+  let playerMoving = (current.piece).substring(0,5);
+  let playerMovingsKing;
+  let playerPutsThemselvesInCheck=false;
+  
+  for (var square = 0; square < gameState.length; square++) {
+    if ((gameState[square].piece).substring(6) === "King" && (gameState[square].piece).substring(0,5) === playerMoving) {
+      playerMovingsKing = gameState[square];
+    }
+  }
+
+  // go through the board state, for each piece of the opponents pieces 
+  // to see if any could take the users king as a result of users' move
+  for (var square = 0; square < gameState.length; square++) {
+    if ((gameState[square].piece).substring(0,5) != playerMoving && (gameState[square].piece).substring(0,5) != "") {
+      if (validMove(gameState[square],playerMovingsKing,gameState)) {
+        playerPutsThemselvesInCheck = true;
+      }
+    }
+  }
+  if (playerPutsThemselvesInCheck) { return false; } else { return true; }
+}
   
 /*
 All
@@ -202,7 +271,7 @@ x determine if vertical move
 
 
 how to take another piece (capture)
-does it make check
+x does it make check
 does it make stalemate
 does it make checkmate
 pawn promotion
